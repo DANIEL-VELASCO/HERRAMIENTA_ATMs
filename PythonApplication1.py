@@ -11,35 +11,14 @@ import pickle
 import xgboost as xgb
 
 
-
-
-
-
-
 app = dash.Dash(__name__,external_stylesheets=[dbc.themes.CERULEAN])
 
 server = app.server
 
 # test pickle model
-
 loaded_model = pickle.load(open('xgboost_model.sav', 'rb'))
 loaded_ohe = pickle.load(open('ohe.sav', 'rb'))
 loaded_scaler = pickle.load(open('scaler.sav', 'rb'))
-
-regional = "Antioquia"
-ubicacion = "Rural"
-segmento = "Oficina"
-comercios_cercanos = 0
-atms_competencia = 0 
-trafico = 0
-
-print(regional)
-print(ubicacion)
-print(segmento)
-print(comercios_cercanos)
-print(atms_competencia)
-print(trafico)
-
 
 
 app.layout = dbc.Form(children=[
@@ -161,8 +140,6 @@ app.layout = dbc.Form(children=[
     dash.dependencies.Output('dd-output-container-regional', 'children'),
     [dash.dependencies.Input('regional-dropdown', 'value')])
 def update_output(value):
-    global regional
-    regional = value
     return 'You have selected "{}"'.format(value)
  
 
@@ -170,8 +147,6 @@ def update_output(value):
     dash.dependencies.Output('dd-output-container-ubicacion', 'children'),
     [dash.dependencies.Input('ubicacion-dropdown', 'value')])
 def update_output(value):
-    global ubicacion
-    ubicacion = value
     return 'You have selected "{}"'.format(value)
 
 
@@ -179,49 +154,47 @@ def update_output(value):
     dash.dependencies.Output('dd-output-container-segmento', 'children'),
     [dash.dependencies.Input('segmento-dropdown', 'value')])
 def update_output(value):
-    global segmento
-    segmento = value
     return 'You have selected "{}"'.format(value)
 
 @app.callback(
     Output("output_comercios_cercanos", "children"),
     Input("input_comercios_cercanos", "value"))
 def update_output(input_comercios_cercanos):
-    global comercios_cercanos
-    comercios_cercanos = input_comercios_cercanos
     return 'Input comercios cercanos {}'.format(input_comercios_cercanos)
 
 @app.callback(
     Output("output_atms_cercanos_competencia", "children"),
     Input("atms_cercanos_competencia", "value"))
 def update_output(atms_cercanos_competencia):
-    global atms_competencia
-    atms_competencia = atms_cercanos_competencia
     return 'Input ATMs cercanos  competencia {}'.format(atms_cercanos_competencia)
 
 @app.callback(
     Output("output_trafico", "children"),
     Input("input_trafico", "value"))
 def update_output(input_trafico):
-    global trafico
-    trafico = input_trafico
     return 'Input trafico {}'.format(input_trafico)
 
 
 @app.callback(Output('container-button-timestamp', 'children'),
-              Input('btn-nclicks-1', 'n_clicks'))
-def displayClick(btn1):
-    print(regional)
-    print(ubicacion)
-    print(segmento)
-    print(comercios_cercanos)
-    print(atms_competencia)
-    print(trafico)
+              Input('btn-nclicks-1', 'n_clicks'),
+              [dash.dependencies.State('regional-dropdown', 'value')],
+              [dash.dependencies.State('ubicacion-dropdown', 'value')],
+              [dash.dependencies.State('segmento-dropdown', 'value')],
+              [dash.dependencies.State('input_comercios_cercanos', 'value')],
+              [dash.dependencies.State('atms_cercanos_competencia', 'value')],
+              [dash.dependencies.State('input_trafico', 'value')])
+def displayClick(n_clicks,regional_value,ubicacion_value,segmentacion_value,comercios_cercanos_value,atms_cercanos_competencia,trafico_val):
+
+    regional = regional_value
+    ubicacion = ubicacion_value
+    segmento = segmentacion_value
+    comercios_cercanos = comercios_cercanos_value
+    atms_competencia = atms_cercanos_competencia
+    trafico = trafico_val
+
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'btn-nclicks-1' in changed_id and all(v is not None for v in [regional, ubicacion, segmento, comercios_cercanos, atms_competencia, trafico]):
-
-        print("entro")
-        
+       
         # dictionary with list object in values 
         values = { 
             'Regional' : [regional], 
@@ -263,7 +236,7 @@ def displayClick(btn1):
     else:
 
         msg = 'por favor llenar todos los campos'
-    return html.H6(msg,style={'color':'red'})
+        return html.H6(msg,style={'color':'red'})
 
 
 
