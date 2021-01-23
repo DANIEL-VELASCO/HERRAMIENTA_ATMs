@@ -24,6 +24,9 @@ loaded_model = pickle.load(open('xgboost_model.sav', 'rb'))
 loaded_ohe = pickle.load(open('ohe.sav', 'rb'))
 loaded_scaler = pickle.load(open('scaler.sav', 'rb'))
 
+regional = None
+ubicacion = None
+segmento = None
 comercios_cercanos = None
 atms_competencia = None 
 trafico = None
