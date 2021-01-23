@@ -26,12 +26,58 @@ loaded_model = pickle.load(open('xgboost_model.sav', 'rb'))
 loaded_ohe = pickle.load(open('ohe.sav', 'rb'))
 loaded_scaler = pickle.load(open('scaler.sav', 'rb'))
 
-regional = None
-ubicacion = None
-segmento = None
-comercios_cercanos = None
-atms_competencia = None 
-trafico = None
+regional = "Antioquia"
+ubicacion = "Rural"
+segmento = "Oficina"
+comercios_cercanos = 0
+atms_competencia = 0 
+trafico = 0
+
+print(regional)
+print(ubicacion)
+print(segmento)
+print(comercios_cercanos)
+print(atms_competencia)
+print(trafico)
+
+# dictionary with list object in values 
+values = { 
+    'Regional' : [regional], 
+    'Ubicación' : [ubicacion],
+    'Segmentación':[segmento],
+    'Antiguedad':["Menor o igual a 2 años"],
+    'Trafico ':[trafico],
+    '#comercios cercanos':[comercios_cercanos],
+    'ATMs Cercanos Competencia':[atms_competencia]    
+}
+
+# creating a Dataframe object  
+df = pd.DataFrame(values) 
+
+df = df.apply(lambda x: x.astype(str).str.upper())
+
+
+#prediction
+
+# Define which columns should be encoded vs scaled
+columns_to_scale  = ['ATMs Cercanos Competencia', '#comercios cercanos','Trafico ']
+columns_to_encode = ['Regional','Ubicación','Segmentación','Antiguedad']
+
+
+cat_ohe_new_data = loaded_ohe.transform(df[columns_to_encode])
+scaled_columns_data  = loaded_scaler.transform(df[columns_to_scale])
+
+ohe_df_new_data = pd.DataFrame(cat_ohe_new_data, columns = loaded_ohe.get_feature_names(input_features = columns_to_encode))
+scaled_df_new_data = pd.DataFrame(scaled_columns_data, columns = columns_to_scale)
+
+frames_new_data = [ohe_df_new_data, scaled_df_new_data]
+processed_data_new_data = pd.concat(frames_new_data, axis=1)
+prediction_txs = np.round(loaded_model.predict(processed_data_new_data)[0])
+
+mensaje = "Transacciones promedio mes esperada: " + str(prediction_txs)
+
+print(mensaje)
+
 
 app.layout = dbc.Form(children=[
 
@@ -242,6 +288,7 @@ def displayClick(btn1):
         prediction_txs = np.round(loaded_model.predict(processed_data_new_data)[0])
 
         mensaje = "Transacciones promedio mes esperada: " + str(prediction_txs)
+
         return html.H1(mensaje)
 
     else:
