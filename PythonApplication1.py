@@ -40,43 +40,6 @@ print(comercios_cercanos)
 print(atms_competencia)
 print(trafico)
 
-# dictionary with list object in values 
-values = { 
-    'Regional' : [regional], 
-    'Ubicación' : [ubicacion],
-    'Segmentación':[segmento],
-    'Antiguedad':["Menor o igual a 2 años"],
-    'Trafico ':[trafico],
-    '#comercios cercanos':[comercios_cercanos],
-    'ATMs Cercanos Competencia':[atms_competencia]    
-}
-
-# creating a Dataframe object  
-df = pd.DataFrame(values) 
-
-df = df.apply(lambda x: x.astype(str).str.upper())
-
-
-#prediction
-
-# Define which columns should be encoded vs scaled
-columns_to_scale  = ['ATMs Cercanos Competencia', '#comercios cercanos','Trafico ']
-columns_to_encode = ['Regional','Ubicación','Segmentación','Antiguedad']
-
-
-cat_ohe_new_data = loaded_ohe.transform(df[columns_to_encode])
-scaled_columns_data  = loaded_scaler.transform(df[columns_to_scale])
-
-ohe_df_new_data = pd.DataFrame(cat_ohe_new_data, columns = loaded_ohe.get_feature_names(input_features = columns_to_encode))
-scaled_df_new_data = pd.DataFrame(scaled_columns_data, columns = columns_to_scale)
-
-frames_new_data = [ohe_df_new_data, scaled_df_new_data]
-processed_data_new_data = pd.concat(frames_new_data, axis=1)
-prediction_txs = np.round(loaded_model.predict(processed_data_new_data)[0])
-
-mensaje = "Transacciones promedio mes esperada: " + str(prediction_txs)
-
-print(mensaje)
 
 
 app.layout = dbc.Form(children=[
@@ -248,6 +211,12 @@ def update_output(input_trafico):
 @app.callback(Output('container-button-timestamp', 'children'),
               Input('btn-nclicks-1', 'n_clicks'))
 def displayClick(btn1):
+    print(regional)
+    print(ubicacion)
+    print(segmento)
+    print(comercios_cercanos)
+    print(atms_competencia)
+    print(trafico)
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'btn-nclicks-1' in changed_id and all(v is not None for v in [regional, ubicacion, segmento, comercios_cercanos, atms_competencia, trafico]):
 
