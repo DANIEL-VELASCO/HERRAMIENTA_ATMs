@@ -14,8 +14,9 @@ import pickle
 
 
 
-app = dash.Dash(external_stylesheets=[dbc.themes.CERULEAN])
+app = dash.Dash(__name__,external_stylesheets=[dbc.themes.CERULEAN])
 
+server = app.server
 
 # test pickle model
 
