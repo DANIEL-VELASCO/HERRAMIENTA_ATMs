@@ -8,6 +8,8 @@ import numpy as np
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 import pickle
+import xgboost as xgb
+
 
 
 
@@ -202,6 +204,8 @@ def update_output(input_trafico):
 def displayClick(btn1):
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'btn-nclicks-1' in changed_id and all(v is not None for v in [regional, ubicacion, segmento, comercios_cercanos, atms_competencia, trafico]):
+
+        print("entro")
         
         # dictionary with list object in values 
         values = { 
